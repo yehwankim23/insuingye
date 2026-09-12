@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>1소대 인수인계서 생성기</title>
+    <style>
+      input,
+      textarea {
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>1소대 인수인계서 생성기</h1>
+
+    <label for="startDateInput">시작일:</label>
+    <input id="startDateInput" type="date" />
+
+    <br />
+
+    <label for="endDateInput">종료일:</label>
+    <input id="endDateInput" type="date" />
+
+    <br />
+    <br />
+
+    <textarea id="common" placeholder="공통 인수인계 사항" cols="100" rows="10"></textarea>
+
+    <br />
+    <br />
+
+    <input id="gam" type="radio" name="location" checked />
+    <label for="gam">감ㅇㅇ</label>
+
+    <input id="yong" type="radio" name="location" />
+    <label for="yong">용ㅇㅇ</label>
+
+    <br />
+    <br />
+
+    <input type="button" id="create" value="생성하기" />
+
+    <br />
+
+    <div id="result"></div>
+
+    <p>&copy; 2026 김예환 Ye-Hwan Kim (Sam)</p>
+
+    <script>
+      const startDateInput = document.querySelector("#startDateInput");
+      const endDateInput = document.querySelector("#endDateInput");
+      const result = document.querySelector("#result");
+
+      function setEndDate() {
+        date = new Date(startDateInput.value);
+        date.setDate(date.getDate() + 119);
+        endDateInput.value = date.toISOString().slice(0, 10);
+      }
+
+      startDateInput.addEventListener("change", () => {
+        setEndDate();
+      });
+
+      let date = new Date();
+      startDateInput.value = date.toISOString().slice(0, 10);
+      setEndDate();
+
+      document.querySelector("#create").addEventListener("click", () => {
+        result.innerHTML = "";
+
+        let today = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        let text = "";
+        const trim = common.value.trim();
+        let days = 1;
+
+        while (today <= endDate) {
+          const month = today.getMonth() + 1;
+          date = today.getDate();
+
+          if (text == "") {
+            text = `1소대 ${today.getFullYear()}년 ${month}월 인수인계서
+${trim ? "\n" + trim + "\n" : ""}
+`;
+          }
+
+          text += `${"=".repeat(80)}
+${month}월 ${date}일 D+${days}
+
+[주간]
+
+
+[전반야]
+
+
+[후반야]
+
+
+`;
+
+          if (document.querySelector("#gam").checked) {
+            text += `[과학화] 일
+[IP] 일
+[주둔지] 좌상단: 일 / 우상단: 일 / 좌하단: 일 / AI: 일
+`;
+          } else if (document.querySelector("#yong").checked) {
+            text += `[과학화] 일
+[주둔지] NVR: 일 / AI: 일 / DVR: 일
+`;
+          }
+
+          let tomorrow = new Date(today);
+          tomorrow.setDate(date + 1);
+
+          if (
+            month != tomorrow.getMonth() + 1 ||
+            today.toISOString().slice(0, 10) == endDate.toISOString().slice(0, 10)
+          ) {
+            result.appendChild(document.createElement("br"));
+
+            let textarea = document.createElement("textarea");
+            textarea.cols = 100;
+            textarea.rows = 10;
+            textarea.innerHTML = text;
+            result.appendChild(textarea);
+
+            text = "";
+          }
+
+          today.setDate(date + 1);
+          days += 1;
+        }
+      });
+    </script>
+  </body>
+</html>
